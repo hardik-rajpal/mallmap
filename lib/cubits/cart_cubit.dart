@@ -15,4 +15,9 @@ class CartCubit extends Cubit<CartState> {
   void setShopUuid(String shopUuid) {
     emit(CartState(shopUuid, state.products));
   }
+
+  void removeProduct(String uuid) {
+    state.products.remove(uuid);
+    emit(CartState(state.shopUuid, [...state.products]));
+  }
 }

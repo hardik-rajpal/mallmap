@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:mallmap/comps/dialog.dart';
 import 'package:mallmap/cubits/cart_cubit.dart';
 import 'package:mallmap/data_service.dart';
 import 'package:mallmap/models.dart';
@@ -19,30 +20,10 @@ class _ViewCartPageState extends State<ViewCartPage> {
   @override
   void initState() {
     super.initState();
-    Future.wait(widget.cartCubit.state.products.map((uuid) {
-      return dataService.getProductInfo(uuid, widget.cartCubit.state.shopUuid);
-    }).toList())
-        .then(
-      (value) {
-        List<Product> uniqprods = [];
-        for (int i = 0; i < value.length; i++) {
-          if (uniqprods.map((e) => e.uuid).contains(value[i].uuid)) {
-            uniqprods[uniqprods
-                    .map((e) => e.uuid)
-                    .toList()
-                    .indexOf(value[i].uuid)]
-                .qty++;
-          } else {
-            uniqprods.add(value[i]);
-          }
-          log(uniqprods.toString());
-        }
-        log('here');
-        setState(() {
-          _productData = uniqprods;
-        });
-      },
-    );
+    widget.cartCubit.stream.listen((state) {
+      updateCartView(state);
+    });
+    updateCartView(widget.cartCubit.state);
   }
 
   @override
@@ -78,6 +59,12 @@ class _ViewCartPageState extends State<ViewCartPage> {
                               Column(children: [
                                 IconButton(
                                     onPressed: () {
+                                      confirmAction(
+                                          context: context,
+                                          onConfirm: () {
+                                            widget.cartCubit
+                                                .removeProduct(product.uuid);
+                                          });
                                       //confirm delete...
                                       //remove from widget.cartCubit
                                     },
@@ -88,6 +75,33 @@ class _ViewCartPageState extends State<ViewCartPage> {
                       ))
                   .toList())
           : const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  void updateCartView(CartState state) {
+    Future.wait(state.products.map((uuid) {
+      return dataService.getProductInfo(uuid, state.shopUuid);
+    }).toList())
+        .then(
+      (value) {
+        List<Product> uniqprods = [];
+        for (int i = 0; i < value.length; i++) {
+          if (uniqprods.map((e) => e.uuid).contains(value[i].uuid)) {
+            uniqprods[uniqprods
+                    .map((e) => e.uuid)
+                    .toList()
+                    .indexOf(value[i].uuid)]
+                .qty++;
+          } else {
+            uniqprods.add(value[i]);
+          }
+          log(uniqprods.toString());
+        }
+        log('here');
+        setState(() {
+          _productData = uniqprods;
+        });
+      },
     );
   }
 }
