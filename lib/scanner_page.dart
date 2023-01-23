@@ -2,12 +2,13 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mallmap/cubits/cart_cubit.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRViewExample extends StatefulWidget {
-  const QRViewExample({Key? key}) : super(key: key);
+  final Function onQRScanned;
+  const QRViewExample(this.onQRScanned, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QRViewExampleState();
@@ -16,6 +17,7 @@ class QRViewExample extends StatefulWidget {
 class _QRViewExampleState extends State<QRViewExample> {
   Barcode? result;
   QRViewController? controller;
+  bool popped = false;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
   // In order to get hot reload to work we need to pause the camera if the platform
@@ -28,6 +30,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     } else {
       controller!.resumeCamera();
     }
+    popped = false;
   }
 
   @override
@@ -68,8 +71,16 @@ class _QRViewExampleState extends State<QRViewExample> {
       reassemble();
     });
     controller.scannedDataStream.listen((scanData) {
+      if (result != null) {
+        if (!popped) {
+          Navigator.of(context).pop();
+          popped = true;
+        }
+        return;
+      }
       setState(() {
         result = scanData;
+        widget.onQRScanned(scanData);
         //add product to cart.
       });
     });
@@ -92,7 +103,8 @@ class _QRViewExampleState extends State<QRViewExample> {
 }
 
 class ScannerPage extends StatefulWidget {
-  const ScannerPage({Key? key}) : super(key: key);
+  final CartCubit cartCubit;
+  const ScannerPage({required this.cartCubit, Key? key}) : super(key: key);
 
   @override
   State<ScannerPage> createState() => _ScannerPageState();
@@ -110,6 +122,10 @@ class _ScannerPageState extends State<ScannerPage> {
     });
   }
 
+  onQRScanned(product) {
+    widget.cartCubit.addProduct(product);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +133,7 @@ class _ScannerPageState extends State<ScannerPage> {
         title: const Text('Checkout Product'),
       ),
       body: (cameras != null)
-          ? const QRViewExample()
+          ? QRViewExample(onQRScanned)
           : const Text('Detecting cameras'),
     );
   }

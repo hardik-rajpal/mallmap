@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mallmap/cubits/cart_cubit.dart';
 import 'package:mallmap/scanner_page.dart';
+import 'package:mallmap/view_cart_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final CartCubit cartCubit = CartCubit();
+  MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -16,13 +19,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Mall Mapper'),
+      home: MyHomePage(title: 'Mall Mapper', cartCubit: cartCubit),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, required this.cartCubit})
+      : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -34,7 +38,7 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-
+  final CartCubit cartCubit;
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -61,7 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.shopping_cart))
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return ViewCartPage(widget.cartCubit);
+                }));
+              },
+              icon: const Icon(Icons.shopping_cart))
         ],
       ),
       body: Center(
@@ -97,7 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return const ScannerPage();
+            return ScannerPage(
+              cartCubit: widget.cartCubit,
+            );
           }));
         },
         tooltip: 'Increment',
