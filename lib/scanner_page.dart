@@ -80,7 +80,7 @@ class _QRViewExampleState extends State<QRViewExample> {
       }
       setState(() {
         result = scanData;
-        widget.onQRScanned(scanData);
+        widget.onQRScanned(scanData.code);
         //add product to cart.
       });
     });
