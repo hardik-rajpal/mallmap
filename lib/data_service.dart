@@ -18,4 +18,8 @@ class DataService {
         uuid: productUuid,
         cost: '\$99');
   }
+
+  Future<String> getShopMapUrl(double lat, double lng) async {
+    return 'https://i.imgur.com/N1YT7Wm.jpg';
+  }
 }
