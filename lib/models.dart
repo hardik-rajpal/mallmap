@@ -11,6 +11,20 @@ class Product {
       required this.description,
       required this.cost,
       required this.uuid});
-  @override
-  int get hashCode => uuid.hashCode;
+  static List<Product> getDummies() {
+    return [
+      Product(
+          title: 'Product 2',
+          imgurl: 'https://i.imgur.com/vxP6SFl.png',
+          description: 'Another great product',
+          cost: '\$89',
+          uuid: 'uuid'),
+      Product(
+          title: 'Product 3',
+          imgurl: 'https://i.imgur.com/vxP6SFl.png',
+          cost: '\$79',
+          description: 'Do I even need to talk?',
+          uuid: 'uuid')
+    ];
+  }
 }

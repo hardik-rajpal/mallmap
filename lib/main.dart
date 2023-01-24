@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mallmap/cubits/cart_cubit.dart';
+import 'package:mallmap/map_view.dart';
 import 'package:mallmap/scanner_page.dart';
+import 'package:mallmap/shop_catalogue_page.dart';
 import 'package:mallmap/view_cart_page.dart';
 
 void main() {
@@ -44,8 +46,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final int _counter = 0;
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -68,6 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
               onPressed: () {
                 Navigator.of(context)
+                    .push(MaterialPageRoute(builder: ((context) {
+                  return const ShopCataloguePage();
+                })));
+              },
+              icon: const Icon(Icons.menu)),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
                   return ViewCartPage(widget.cartCubit);
                 }));
@@ -75,32 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: const Icon(Icons.shopping_cart))
         ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Map Widget goes here',
-            )
-          ],
-        ),
-      ),
+      body: const MapView(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {

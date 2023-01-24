@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:mallmap/comps/dialog.dart';
+import 'package:mallmap/comps/uifuncs.dart';
 import 'package:mallmap/cubits/cart_cubit.dart';
 import 'package:mallmap/data_service.dart';
 import 'package:mallmap/models.dart';
@@ -33,47 +33,28 @@ class _ViewCartPageState extends State<ViewCartPage> {
         title: const Text('Cart'),
       ),
       body: (_productData != null)
-          ? Column(
-              children: _productData!
-                  .map((product) => Card(
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Image.network(
-                                product.imgurl,
-                                width: 100,
-                                height: 100,
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.title,
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                  Text(product.description)
-                                ],
-                              ),
-                              Text(product.cost),
-                              Column(children: [
-                                IconButton(
-                                    onPressed: () {
-                                      confirmAction(
-                                          context: context,
-                                          onConfirm: () {
-                                            widget.cartCubit
-                                                .removeProduct(product.uuid);
-                                          });
-                                      //confirm delete...
-                                      //remove from widget.cartCubit
-                                    },
-                                    icon: const Icon(Icons.delete)),
-                                Text(product.qty.toString())
-                              ])
-                            ]),
-                      ))
-                  .toList())
+          ? (_productData!.isNotEmpty
+              ? Column(
+                  children: _productData!
+                      .map((product) =>
+                          makeProductCard(product, context, widget))
+                      .toList())
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.shopping_cart_outlined,
+                        size: 100,
+                      ),
+                      Text(
+                        'Cart Empty',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text('Add items by scanning their QR code')
+                    ],
+                  ),
+                ))
           : const Center(child: CircularProgressIndicator()),
     );
   }
@@ -97,7 +78,6 @@ class _ViewCartPageState extends State<ViewCartPage> {
           }
           log(uniqprods.toString());
         }
-        log('here');
         setState(() {
           _productData = uniqprods;
         });
