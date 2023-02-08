@@ -7,7 +7,6 @@ import 'package:mallmap/data_service.dart';
 
 class MapView extends StatefulWidget {
   const MapView({Key? key}) : super(key: key);
-
   @override
   State<MapView> createState() => _MapViewState();
 }
